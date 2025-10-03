@@ -12,4 +12,13 @@ export default defineConfig({
       // will automatically pick up the `manifest.json` from the `public` directory.
     }),
   ],
+  server: {
+    proxy: {
+      '/huggingface': {
+        target: 'https://huggingface.co',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/huggingface/, ''),
+      },
+    },
+  },
 });

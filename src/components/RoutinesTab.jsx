@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '../db';
+import { useAppStore } from '../store';
 
 // --- Parser Logic ---
 const parseRoutine = (text) => {
@@ -29,6 +30,7 @@ const parseRoutine = (text) => {
 const RoutinesTab = () => {
   const [routineInput, setRoutineInput] = useState('');
   const allRoutines = useLiveQuery(() => db.routines.toArray(), []);
+  const openEditRoutine = useAppStore((state) => state.openEditRoutine);
 
   const handleCreateRoutine = async () => {
     const parsed = parseRoutine(routineInput);
@@ -57,6 +59,16 @@ const RoutinesTab = () => {
       console.log(`Added ${routine.name} tasks to today.`);
     } catch (error) {
       console.error('Failed to add routine tasks to today:', error);
+    }
+  };
+
+  const handleDeleteRoutine = async (id) => {
+    if (window.confirm('Are you sure you want to delete this routine?')) {
+      try {
+        await db.routines.delete(id);
+      } catch (error) {
+        console.error('Failed to delete routine:', error);
+      }
     }
   };
 
@@ -107,6 +119,12 @@ const RoutinesTab = () => {
             <CardActions>
               <Button size="small" onClick={() => handleAddToToday(routine)}>
                 Add to My Day
+              </Button>
+              <Button size="small" onClick={() => openEditRoutine(routine)}>
+                Edit
+              </Button>
+              <Button size="small" color="error" onClick={() => handleDeleteRoutine(routine.id)}>
+                Delete
               </Button>
             </CardActions>
           </Card>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Box, Typography, Stack, Slider, IconButton, Fab, List, LinearProgress } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import MoodIcon from '@mui/icons-material/Mood';
@@ -11,6 +11,34 @@ import { db } from '../db';
 import TaskItem from '../components/TaskItem';
 import MindMapDisplay from '../components/MindMapDisplay';
 
+const priorityValues = {
+  Low: 3,
+  Medium: 2,
+  High: 1,
+};
+
+const calculateTaskScore = (task) => {
+  const now = new Date();
+  const dueDate = task.dueDate ? new Date(task.dueDate) : null;
+  const daysUntilDue = dueDate ? (dueDate - now) / (1000 * 60 * 60 * 24) : Infinity;
+
+  const priority = priorityValues[task.priority] || 2;
+  const energy = task.energy || 3;
+
+  // Lower score is better
+  let score = 0;
+  if (daysUntilDue < 0) { // Overdue tasks get highest priority
+    score -= 1000;
+  } else if (daysUntilDue < 2) { // Due in next 2 days
+    score -= 500;
+  }
+
+  score += priority * 100; // Higher priority (lower value) is better
+  score += energy * 10; // Lower energy is slightly better
+
+  return score;
+};
+
 const TodayScreen = () => {
   const { energyLevel, setEnergyLevel, mood, setMood, openTaskBreakdown, focusMode } = useAppStore();
 
@@ -18,12 +46,19 @@ const TodayScreen = () => {
 
   const todaysTasks = useLiveQuery(() => db.tasks.where('date').equals(today).toArray(), [today]);
 
-  const filteredTasks = todaysTasks?.filter(task => {
-    if (energyLevel <= 2) {
-      return task.tags && task.tags.includes('#survival');
-    }
-    return true;
-  });
+  const filteredTasks = useMemo(() => {
+    if (!todaysTasks) return [];
+
+    const filtered = todaysTasks.filter(task => {
+      if (energyLevel <= 2) {
+        return (task.energy || 3) <= energyLevel;
+      }
+      return true;
+    });
+
+    return filtered.sort((a, b) => calculateTaskScore(a) - calculateTaskScore(b));
+
+  }, [todaysTasks, energyLevel]);
 
   const completedTasksCount = filteredTasks?.filter(t => t.completed).length || 0;
   const totalTasksCount = filteredTasks?.length || 0;

@@ -15,6 +15,8 @@ import PlanScreen from './screens/PlanScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import OnboardingDialog from './components/OnboardingDialog';
 import TaskBreakdownDialog from './components/TaskBreakdownDialog';
+import EditTaskDialog from './components/EditTaskDialog';
+import EditRoutineDialog from './components/EditRoutineDialog';
 
 const encouragementMessages = [
   "You're doing great!",
@@ -79,6 +81,8 @@ function App() {
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
         <OnboardingDialog />
         <TaskBreakdownDialog />
+        <EditTaskDialog />
+        <EditRoutineDialog />
         <Box sx={{ flexGrow: 1, p: 3, overflowY: 'auto', mb: 7 }}>
           {renderScreen()}
         </Box>

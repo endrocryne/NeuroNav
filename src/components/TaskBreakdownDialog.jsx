@@ -13,29 +13,13 @@ import {
   Checkbox,
   Box,
   Slide,
+  CircularProgress,
+  LinearProgress,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useAppStore } from '../store';
 import { db } from '../db';
-
-// --- Client-Side "AI" Logic ---
-const breakdownTask = (taskString) => {
-  const lowerCaseTask = taskString.toLowerCase();
-  const keywords = {
-    clean: ['Declutter surfaces', 'Wipe down counters', 'Do the dishes', 'Sweep the floor', 'Take out the trash'],
-    project: ['Review the requirements', 'Create an outline', 'Research one source article', 'Write the introduction', 'Take a 5-minute break'],
-    essay: ['Review the requirements', 'Create an outline', 'Research one source article', 'Write the introduction', 'Take a 5-minute break'],
-    laundry: ['Sort clothes', 'Wash one load', 'Dry one load', 'Fold and put away'],
-    'morning routine': ['Take meds', 'Brush teeth', 'Make coffee', 'Get dressed'],
-  };
-
-  for (const key in keywords) {
-    if (lowerCaseTask.includes(key)) {
-      return keywords[key];
-    }
-  }
-  return [taskString]; // Default: return the original task as a single item
-};
+import { breakdownTask } from '../llm';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -46,11 +30,25 @@ const TaskBreakdownDialog = () => {
   const [taskInput, setTaskInput] = useState('');
   const [subTasks, setSubTasks] = useState([]);
   const [isReviewing, setIsReviewing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [progressMessage, setProgressMessage] = useState('');
 
-  const handleBreakdown = () => {
-    const generatedTasks = breakdownTask(taskInput);
+
+  const handleBreakdown = async () => {
+    setIsLoading(true);
+    const progressCallback = (data) => {
+      if (data.status === 'progress') {
+        setProgress(data.progress);
+        setProgressMessage(`Loading model: ${Math.round(data.progress)}%`);
+      } else {
+        setProgressMessage(data.status);
+      }
+    };
+    const generatedTasks = await breakdownTask(taskInput, progressCallback);
     setSubTasks(generatedTasks.map(task => ({ text: task, checked: false })));
     setIsReviewing(true);
+    setIsLoading(false);
   };
 
   const handleSave = async () => {
@@ -59,7 +57,7 @@ const TaskBreakdownDialog = () => {
       title: subtask.text,
       date: today,
       completed: false,
-      tags: taskInput.toLowerCase().includes('clean') ? '#survival' : '', // Example tag
+      tags: '', // Tags can be added later
     }));
 
     try {
@@ -74,6 +72,9 @@ const TaskBreakdownDialog = () => {
     setTaskInput('');
     setSubTasks([]);
     setIsReviewing(false);
+    setIsLoading(false);
+    setProgress(0);
+    setProgressMessage('');
     closeTaskBreakdown();
   };
 
@@ -112,11 +113,18 @@ const TaskBreakdownDialog = () => {
               variant="outlined"
               value={taskInput}
               onChange={(e) => setTaskInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleBreakdown()}
+              onKeyPress={(e) => e.key === 'Enter' && !isLoading && handleBreakdown()}
+              disabled={isLoading}
             />
-            <Button onClick={handleBreakdown} variant="contained" sx={{ mt: 2 }} disabled={!taskInput}>
-              Break it down
+            <Button onClick={handleBreakdown} variant="contained" sx={{ mt: 2 }} disabled={!taskInput || isLoading}>
+              {isLoading ? <CircularProgress size={24} /> : 'Break it down'}
             </Button>
+            {isLoading && (
+              <Box sx={{ width: '100%', mt: 2 }}>
+                <Typography variant="caption">{progressMessage}</Typography>
+                <LinearProgress variant="determinate" value={progress} />
+              </Box>
+            )}
           </>
         ) : (
           <List>

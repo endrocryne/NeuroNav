@@ -20,6 +20,18 @@ export const useAppStore = create(
       openTaskBreakdown: () => set({ isTaskBreakdownOpen: true }),
       closeTaskBreakdown: () => set({ isTaskBreakdownOpen: false }),
 
+      // --- Edit Task Dialog State ---
+      isEditTaskOpen: false,
+      editingTask: null,
+      openEditTask: (task) => set({ isEditTaskOpen: true, editingTask: task }),
+      closeEditTask: () => set({ isEditTaskOpen: false, editingTask: null }),
+
+      // --- Edit Routine Dialog State ---
+      isEditRoutineOpen: false,
+      editingRoutine: null,
+      openEditRoutine: (routine) => set({ isEditRoutineOpen: true, editingRoutine: routine }),
+      closeEditRoutine: () => set({ isEditRoutineOpen: false, editingRoutine: null }),
+
       // --- Settings State ---
       focusMode: 'default', // 'default', 'mindmap', 'lowstim', 'gamified'
       enableEncouragement: true,

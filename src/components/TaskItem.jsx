@@ -14,8 +14,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { motion } from 'framer-motion';
 import { db } from '../db';
+import { useAppStore } from '../store';
 
 const TaskItem = ({ task }) => {
+  const openEditTask = useAppStore((state) => state.openEditTask);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -43,8 +45,7 @@ const TaskItem = ({ task }) => {
   };
 
   const handleEdit = () => {
-    // In a real app, this would open an edit dialog.
-    console.log('Editing task:', task.id);
+    openEditTask(task);
     handleMenuClose();
   };
 
@@ -91,7 +92,7 @@ const TaskItem = ({ task }) => {
           >
             <ListItemText
               primary={task.title}
-              secondary={task.tags || null}
+              secondary={`Due: ${task.dueDate || 'None'} | Energy: ${task.energy || 'N/A'} | Priority: ${task.priority || 'Medium'}`}
             />
           </motion.div>
         </ListItem>
