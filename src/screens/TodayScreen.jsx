@@ -145,7 +145,7 @@ const TodayScreen = () => {
 
         {/* Task List */}
         <Box>
-          <Typography variant="h6">Today's Tasks</Typography>
+          <Typography variant="h6">Today&apos;s Tasks</Typography>
           {renderTaskList()}
         </Box>
       </Stack>

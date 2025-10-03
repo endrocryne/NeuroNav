@@ -6,7 +6,7 @@ db.version(2).stores({
   tasks: '++id, title, date, completed, tags, dueDate, energy, priority',
   routines: '++id, name, tasks',
   settings: 'key',
-}).upgrade(tx => {
+}).upgrade(() => {
   // Migrations can be added here if needed in the future
 });
 
