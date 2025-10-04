@@ -68,8 +68,16 @@ class ModeManager {
         }
 
         tasks.forEach(task => {
-            const taskElement = this.createTaskElement(task);
-            taskList.appendChild(taskElement);
+            try {
+                const taskElement = this.createTaskElement(task);
+                if (taskElement && taskElement.nodeType === 1) {
+                    taskList.appendChild(taskElement);
+                } else {
+                    console.error('Invalid task element:', taskElement, 'for task:', task);
+                }
+            } catch (error) {
+                console.error('Error creating task element:', error, task);
+            }
         });
     }
 
