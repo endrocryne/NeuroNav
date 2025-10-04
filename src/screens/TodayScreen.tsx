@@ -16,6 +16,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useAppStore } from '../stores/appStore';
 import { TaskItem } from '../components/TaskItem';
 import { TaskBreakdownDialog } from '../components/TaskBreakdownDialog';
+import { MindMapView } from '../components/MindMapView';
 import { type Task, db } from '../services/db';
 import { getRandomEncouragementMessage } from '../utils/encouragementMessages';
 import Confetti from 'react-confetti';
@@ -82,6 +83,18 @@ export function TodayScreen() {
   const showIcons = viewMode !== 'lowstim';
 
   const renderTaskList = () => {
+    if (tasks.length === 0) {
+      return (
+        <Typography variant="body1" color="text.secondary" sx={{ mt: 4, textAlign: 'center' }}>
+          Ready for your first task? Use the '+' button to begin.
+        </Typography>
+      );
+    }
+
+    if (viewMode === 'mindmap') {
+      return <MindMapView tasks={tasks} onTaskClick={handleTaskChange} />;
+    }
+
     if (viewMode === 'lowstim' && tasks.length > 0) {
       const visibleTask = tasks[currentTaskIndex];
       return (
@@ -109,14 +122,6 @@ export function TodayScreen() {
             </Button>
           </Stack>
         </Box>
-      );
-    }
-
-    if (tasks.length === 0) {
-      return (
-        <Typography variant="body1" color="text.secondary" sx={{ mt: 4, textAlign: 'center' }}>
-          Ready for your first task? Use the '+' button to begin.
-        </Typography>
       );
     }
 
