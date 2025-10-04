@@ -1,0 +1,327 @@
+/* Mode-Specific Styles */
+
+/* Mind Map Mode */
+.mindmap-canvas {
+    min-height: 500px;
+    background-color: var(--surface);
+    border-radius: var(--radius-md);
+    position: relative;
+    overflow: auto;
+    padding: var(--spacing-lg);
+}
+
+.mindmap-node {
+    position: absolute;
+    padding: var(--spacing-md);
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+    border-radius: var(--radius-md);
+    cursor: move;
+    box-shadow: 0 2px 4px var(--shadow);
+    min-width: 150px;
+    text-align: center;
+}
+
+.mindmap-node.completed {
+    background-color: var(--secondary-container);
+    color: var(--on-secondary-container);
+}
+
+.mindmap-node.parent {
+    background-color: var(--tertiary-container);
+    color: var(--on-tertiary-container);
+    font-weight: 500;
+}
+
+.mindmap-connection {
+    position: absolute;
+    height: 2px;
+    background-color: var(--outline);
+    transform-origin: left center;
+}
+
+/* Low Stimulus Mode */
+#low-stimulus-view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+}
+
+.focus-task {
+    width: 100%;
+    max-width: 600px;
+    padding: var(--spacing-xl);
+    background-color: var(--surface);
+    border-radius: var(--radius-lg);
+    text-align: center;
+}
+
+.focus-task-title {
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--on-surface);
+    margin-bottom: var(--spacing-lg);
+    line-height: 1.4;
+}
+
+.focus-task-checkbox {
+    width: 48px;
+    height: 48px;
+    margin: var(--spacing-lg) auto;
+}
+
+.focus-task-description {
+    font-size: 18px;
+    color: var(--on-surface-variant);
+    margin-top: var(--spacing-lg);
+}
+
+.focus-controls {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+}
+
+.focus-controls .button {
+    min-width: 120px;
+    padding: var(--spacing-md) var(--spacing-lg);
+}
+
+/* Low Stimulus Mode Overrides */
+body.low-stimulus-mode {
+    background-color: #F5F5F5;
+}
+
+body.low-stimulus-mode .app-header {
+    background-color: #E0E0E0;
+    color: #424242;
+    box-shadow: none;
+}
+
+body.low-stimulus-mode .task-item {
+    border: 1px solid #BDBDBD;
+    background-color: #FAFAFA;
+}
+
+body.low-stimulus-mode .icon-button {
+    color: #616161;
+}
+
+body.low-stimulus-mode .encouragement {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+}
+
+body.low-stimulus-mode .focus-task-title {
+    font-size: 32px;
+    font-weight: 300;
+}
+
+/* Gamified Mode */
+.gamified-stats {
+    display: flex;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.stat-card {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    background-color: var(--primary-container);
+    color: var(--on-primary-container);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 2px 4px var(--shadow);
+}
+
+.stat-card .material-icons {
+    font-size: 48px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: var(--surface-variant);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: var(--spacing-lg);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--tertiary));
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+/* Gamified Task Items */
+.gamified-task-item {
+    position: relative;
+    overflow: hidden;
+}
+
+.gamified-task-item::after {
+    content: '✨';
+    position: absolute;
+    top: 50%;
+    right: -50px;
+    transform: translateY(-50%);
+    font-size: 24px;
+    transition: right 0.3s;
+}
+
+.gamified-task-item.completed::after {
+    right: var(--spacing-md);
+}
+
+/* Celebration Animation */
+@keyframes celebrate {
+    0%, 100% {
+        transform: scale(1) rotate(0deg);
+    }
+    25% {
+        transform: scale(1.1) rotate(-5deg);
+    }
+    75% {
+        transform: scale(1.1) rotate(5deg);
+    }
+}
+
+.celebrating {
+    animation: celebrate 0.5s ease;
+}
+
+/* Confetti Effect */
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background-color: var(--primary);
+    top: -10px;
+    animation: confetti-fall 3s linear;
+    pointer-events: none;
+}
+
+@keyframes confetti-fall {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+    }
+}
+
+/* Achievement Badge */
+.achievement-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #000;
+    border-radius: var(--radius-lg);
+    font-weight: 500;
+    font-size: 14px;
+    box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .gamified-stats {
+        flex-direction: column;
+    }
+    
+    .stat-card {
+        justify-content: center;
+    }
+    
+    .mindmap-node {
+        min-width: 120px;
+        font-size: 14px;
+    }
+    
+    .focus-task-title {
+        font-size: 24px;
+    }
+}
+
+/* High Contrast Mode (Accessibility) */
+@media (prefers-contrast: high) {
+    .task-item {
+        border-width: 2px;
+    }
+    
+    .button {
+        border: 2px solid currentColor;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --primary: #D0BCFF;
+        --on-primary: #381E72;
+        --primary-container: #4F378B;
+        --on-primary-container: #EADDFF;
+        
+        --secondary: #CCC2DC;
+        --on-secondary: #332D41;
+        --secondary-container: #4A4458;
+        --on-secondary-container: #E8DEF8;
+        
+        --tertiary: #EFB8C8;
+        --on-tertiary: #492532;
+        --tertiary-container: #633B48;
+        --on-tertiary-container: #FFD8E4;
+        
+        --error: #F2B8B5;
+        --on-error: #601410;
+        --error-container: #8C1D18;
+        --on-error-container: #F9DEDC;
+        
+        --background: #1C1B1F;
+        --on-background: #E6E1E5;
+        --surface: #1C1B1F;
+        --on-surface: #E6E1E5;
+        
+        --outline: #938F99;
+        --surface-variant: #49454F;
+        --on-surface-variant: #CAC4D0;
+    }
+    
+    body.low-stimulus-mode {
+        background-color: #2C2C2C;
+    }
+    
+    body.low-stimulus-mode .app-header {
+        background-color: #3C3C3C;
+        color: #E0E0E0;
+    }
+    
+    body.low-stimulus-mode .task-item {
+        border: 1px solid #616161;
+        background-color: #383838;
+    }
+}
