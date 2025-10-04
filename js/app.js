@@ -16,6 +16,7 @@ class NeuroNavApp {
             await routineManager.loadRoutines();
             await modeManager.loadMode();
             await encouragementManager.loadSettings();
+            await aiBreakdown.loadLLMConfig();
 
             // Setup UI
             this.setupEventListeners();
@@ -50,6 +51,9 @@ class NeuroNavApp {
 
         // Settings button
         document.getElementById('settings-button').addEventListener('click', () => {
+            // Load current LLM settings
+            document.getElementById('llm-endpoint').value = aiBreakdown.llmEndpoint || '';
+            document.getElementById('llm-api-key').value = aiBreakdown.llmApiKey || '';
             document.getElementById('settings-modal').classList.add('open');
         });
 
@@ -143,6 +147,35 @@ class NeuroNavApp {
         // Settings toggles
         document.getElementById('encouragement-toggle').addEventListener('change', (e) => {
             encouragementManager.setEnabled(e.target.checked);
+        });
+
+        // Edit task modal
+        document.getElementById('close-edit-task-modal').addEventListener('click', () => {
+            document.getElementById('edit-task-modal').classList.remove('open');
+        });
+
+        document.getElementById('cancel-edit-task').addEventListener('click', () => {
+            document.getElementById('edit-task-modal').classList.remove('open');
+        });
+
+        document.getElementById('save-edit-task').addEventListener('click', () => {
+            modeManager.saveEditedTask();
+        });
+
+        // LLM configuration
+        document.getElementById('close-settings').addEventListener('click', async () => {
+            const endpoint = document.getElementById('llm-endpoint').value.trim();
+            const apiKey = document.getElementById('llm-api-key').value.trim();
+            
+            if (endpoint) {
+                aiBreakdown.configureLLM(endpoint, apiKey || null);
+                encouragementManager.showToast('LLM configured successfully');
+            } else if (aiBreakdown.llmEndpoint) {
+                // User cleared the endpoint, disable LLM
+                aiBreakdown.disableLLM();
+            }
+            
+            document.getElementById('settings-modal').classList.remove('open');
         });
 
         // FAB

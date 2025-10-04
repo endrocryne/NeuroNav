@@ -314,6 +314,26 @@ body {
     font-size: 12px;
 }
 
+.task-tag.priority-high {
+    background-color: var(--error-container);
+    color: var(--on-error-container);
+}
+
+.task-tag.priority-low {
+    background-color: var(--surface-variant);
+    color: var(--on-surface-variant);
+}
+
+.task-tag.due-date.overdue {
+    background-color: var(--error-container);
+    color: var(--on-error-container);
+}
+
+.task-tag.due-date.today {
+    background-color: var(--tertiary-container);
+    color: var(--on-tertiary-container);
+}
+
 .task-actions {
     display: flex;
     gap: var(--spacing-xs);
@@ -438,8 +458,22 @@ body {
     padding: var(--spacing-lg);
 }
 
+.modal-body label {
+    display: block;
+    margin-top: var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--on-surface);
+}
+
+.modal-body label:first-child {
+    margin-top: 0;
+}
+
 .input,
-.textarea {
+.textarea,
+select.input {
     width: 100%;
     padding: var(--spacing-md);
     margin-bottom: var(--spacing-md);

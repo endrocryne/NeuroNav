@@ -1,9 +1,14 @@
 // AI-Powered Task Breakdown
-// This is a client-side implementation using pattern matching and rules
-// No external API calls for privacy
+// LLM-based implementation with fallback to local patterns
+// Supports self-hosted LLMs and browser-based models for privacy
 
 class AIBreakdown {
     constructor() {
+        this.llmEndpoint = null; // User can configure their own LLM endpoint
+        this.llmApiKey = null;
+        this.useLLM = false;
+        
+        // Fallback patterns if LLM is not available
         this.patterns = [
             // Travel/Vacation
             {
@@ -134,7 +139,17 @@ class AIBreakdown {
         ];
     }
 
-    breakdown(taskText) {
+    async breakdown(taskText) {
+        // Try LLM-based breakdown first if configured
+        if (this.useLLM && this.llmEndpoint) {
+            try {
+                return await this.llmBreakdown(taskText);
+            } catch (error) {
+                console.warn('LLM breakdown failed, falling back to pattern matching:', error);
+            }
+        }
+        
+        // Fallback to pattern matching
         const lowerText = taskText.toLowerCase();
         
         // Find matching pattern
@@ -148,6 +163,104 @@ class AIBreakdown {
 
         // Default breakdown for unmatched tasks
         return this.createGenericBreakdown(taskText);
+    }
+
+    async llmBreakdown(taskText) {
+        const prompt = `Break down the following task into smaller, actionable subtasks. Return only a JSON array of subtask titles, nothing else.
+
+Task: "${taskText}"
+
+Return format: ["subtask 1", "subtask 2", ...]`;
+
+        const response = await fetch(this.llmEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                ...(this.llmApiKey && { 'Authorization': `Bearer ${this.llmApiKey}` })
+            },
+            body: JSON.stringify({
+                model: 'gpt-3.5-turbo', // Can be configured
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'You are a helpful assistant that breaks down tasks into smaller, actionable subtasks. Always respond with a valid JSON array of strings.'
+                    },
+                    {
+                        role: 'user',
+                        content: prompt
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 500
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`LLM API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+        let subtaskTitles;
+
+        // Parse response (different APIs have different formats)
+        if (data.choices && data.choices[0]?.message?.content) {
+            // OpenAI-compatible format
+            const content = data.choices[0].message.content.trim();
+            // Extract JSON array from response
+            const jsonMatch = content.match(/\[.*\]/s);
+            if (jsonMatch) {
+                subtaskTitles = JSON.parse(jsonMatch[0]);
+            } else {
+                throw new Error('Could not parse LLM response');
+            }
+        } else if (Array.isArray(data)) {
+            // Direct array response
+            subtaskTitles = data;
+        } else {
+            throw new Error('Unexpected LLM response format');
+        }
+
+        return subtaskTitles.map(title => ({
+            title: title.trim(),
+            parent: taskText,
+            completed: false,
+            energyLevel: this.suggestEnergyLevel(title),
+            isSurvival: this.suggestSurvival(title)
+        }));
+    }
+
+    // Configuration methods
+    configureLLM(endpoint, apiKey = null) {
+        this.llmEndpoint = endpoint;
+        this.llmApiKey = apiKey;
+        this.useLLM = true;
+        
+        // Save to storage
+        storage.setSetting('llmEndpoint', endpoint);
+        if (apiKey) {
+            storage.setSetting('llmApiKey', apiKey);
+        }
+    }
+
+    async loadLLMConfig() {
+        const endpoint = await storage.getSetting('llmEndpoint');
+        const apiKey = await storage.getSetting('llmApiKey');
+        
+        if (endpoint) {
+            this.llmEndpoint = endpoint;
+            this.llmApiKey = apiKey;
+            this.useLLM = true;
+        }
+    }
+
+    disableLLM() {
+        this.useLLM = false;
+    }
+
+    enableLLM() {
+        if (this.llmEndpoint) {
+            this.useLLM = true;
+        }
     }
 
     createSubtasks(parentTask, subtaskList) {

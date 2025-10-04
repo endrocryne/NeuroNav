@@ -74,6 +74,11 @@ class ModeManager {
     }
 
     createTaskElement(task) {
+        if (!task || !task.title) {
+            console.error('Invalid task:', task);
+            return document.createElement('div'); // Return empty div to prevent crash
+        }
+        
         const div = document.createElement('div');
         div.className = 'task-item' + (task.completed ? ' completed' : '');
         
@@ -116,6 +121,35 @@ class ModeManager {
             tags.appendChild(routineTag);
         }
 
+        if (task.priority && task.priority !== 'medium') {
+            const priorityTag = document.createElement('span');
+            priorityTag.className = 'task-tag priority-' + task.priority;
+            const priorityIcons = { low: '⬇️', high: '⬆️' };
+            priorityTag.textContent = `${priorityIcons[task.priority] || ''} ${task.priority}`;
+            tags.appendChild(priorityTag);
+        }
+
+        if (task.dueDate) {
+            const dueTag = document.createElement('span');
+            dueTag.className = 'task-tag due-date';
+            const dueDate = new Date(task.dueDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            dueDate.setHours(0, 0, 0, 0);
+            
+            const isOverdue = dueDate < today;
+            const isToday = dueDate.getTime() === today.getTime();
+            
+            if (isOverdue && !task.completed) {
+                dueTag.classList.add('overdue');
+            } else if (isToday) {
+                dueTag.classList.add('today');
+            }
+            
+            dueTag.textContent = `📅 ${this.formatDate(task.dueDate)}`;
+            tags.appendChild(dueTag);
+        }
+
         content.appendChild(title);
         if (tags.children.length > 0) {
             content.appendChild(tags);
@@ -123,6 +157,13 @@ class ModeManager {
 
         const actions = document.createElement('div');
         actions.className = 'task-actions';
+
+        const editBtn = document.createElement('button');
+        editBtn.className = 'icon-button';
+        editBtn.innerHTML = '<span class="material-icons">edit</span>';
+        editBtn.addEventListener('click', () => {
+            this.openEditTaskModal(task);
+        });
 
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'icon-button';
@@ -132,6 +173,7 @@ class ModeManager {
             this.renderCurrentMode();
         });
 
+        actions.appendChild(editBtn);
         actions.appendChild(deleteBtn);
 
         div.appendChild(checkbox);
@@ -139,6 +181,67 @@ class ModeManager {
         div.appendChild(actions);
 
         return div;
+    }
+
+    openEditTaskModal(task) {
+        const modal = document.getElementById('edit-task-modal');
+        
+        // Populate modal fields
+        document.getElementById('edit-task-title').value = task.title;
+        document.getElementById('edit-task-description').value = task.description || '';
+        document.getElementById('edit-task-energy').value = task.energyLevel || 'medium';
+        document.getElementById('edit-task-priority').value = task.priority || 'medium';
+        document.getElementById('edit-task-due-date').value = task.dueDate || '';
+        document.getElementById('edit-task-survival').checked = task.isSurvival || false;
+        
+        // Store task ID for saving
+        modal.dataset.taskId = task.id;
+        
+        // Show modal
+        modal.classList.add('open');
+    }
+
+    async saveEditedTask() {
+        const modal = document.getElementById('edit-task-modal');
+        const taskId = parseInt(modal.dataset.taskId);
+        
+        const updates = {
+            title: document.getElementById('edit-task-title').value.trim(),
+            description: document.getElementById('edit-task-description').value.trim(),
+            energyLevel: document.getElementById('edit-task-energy').value,
+            priority: document.getElementById('edit-task-priority').value,
+            dueDate: document.getElementById('edit-task-due-date').value || null,
+            isSurvival: document.getElementById('edit-task-survival').checked
+        };
+        
+        if (!updates.title) {
+            encouragementManager.showToast('Task title cannot be empty');
+            return;
+        }
+        
+        await taskManager.updateTask(taskId, updates);
+        modal.classList.remove('open');
+        this.renderCurrentMode();
+        encouragementManager.showToast('Task updated!');
+    }
+
+    formatDate(dateString) {
+        const date = new Date(dateString);
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        
+        today.setHours(0, 0, 0, 0);
+        tomorrow.setHours(0, 0, 0, 0);
+        date.setHours(0, 0, 0, 0);
+        
+        if (date.getTime() === today.getTime()) {
+            return 'Today';
+        } else if (date.getTime() === tomorrow.getTime()) {
+            return 'Tomorrow';
+        } else {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
     }
 
     getEnergyIcon(level) {

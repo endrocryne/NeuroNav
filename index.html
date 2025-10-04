@@ -223,6 +223,69 @@
             </div>
         </div>
 
+        <!-- Edit Task Modal -->
+        <div id="edit-task-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Task</h2>
+                    <button class="icon-button" id="close-edit-task-modal">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="edit-task-title">Task Title</label>
+                    <input 
+                        type="text" 
+                        id="edit-task-title" 
+                        class="input" 
+                        placeholder="Task title"
+                        required
+                    >
+                    
+                    <label for="edit-task-description">Description (optional)</label>
+                    <textarea 
+                        id="edit-task-description" 
+                        class="textarea" 
+                        placeholder="Add more details about this task"
+                        rows="3"
+                    ></textarea>
+                    
+                    <label for="edit-task-priority">Priority</label>
+                    <select id="edit-task-priority" class="input">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                    
+                    <label for="edit-task-energy">Energy Level</label>
+                    <select id="edit-task-energy" class="input">
+                        <option value="low">Low Energy 🌙</option>
+                        <option value="medium">Medium Energy ☀️</option>
+                        <option value="high">High Energy ⚡</option>
+                    </select>
+                    
+                    <label for="edit-task-due-date">Due Date (optional)</label>
+                    <input 
+                        type="date" 
+                        id="edit-task-due-date" 
+                        class="input"
+                    >
+                    
+                    <div class="setting-item">
+                        <label for="edit-task-survival">
+                            <span>Mark as Essential/Survival Task</span>
+                        </label>
+                        <input type="checkbox" id="edit-task-survival">
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button class="button" id="cancel-edit-task">Cancel</button>
+                        <button class="button primary" id="save-edit-task">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Settings Modal -->
         <div id="settings-modal" class="modal">
             <div class="modal-content">
@@ -245,6 +308,28 @@
                         </label>
                         <input type="checkbox" id="auto-breakdown-toggle" checked>
                     </div>
+                    
+                    <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">LLM Configuration (Optional)</h3>
+                    <p style="font-size: 14px; color: var(--on-surface-variant); margin-bottom: 1rem;">
+                        Configure an LLM endpoint for AI-powered task breakdown. Leave empty to use pattern matching.
+                    </p>
+                    
+                    <label for="llm-endpoint">LLM API Endpoint</label>
+                    <input 
+                        type="text" 
+                        id="llm-endpoint" 
+                        class="input" 
+                        placeholder="https://api.openai.com/v1/chat/completions"
+                    >
+                    
+                    <label for="llm-api-key">API Key (optional)</label>
+                    <input 
+                        type="password" 
+                        id="llm-api-key" 
+                        class="input" 
+                        placeholder="Your API key"
+                    >
+                    
                     <div class="modal-actions">
                         <button class="button primary" id="close-settings">Done</button>
                     </div>

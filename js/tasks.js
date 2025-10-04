@@ -18,6 +18,8 @@ class TaskManager {
             completed: false,
             energyLevel: taskData.energyLevel || aiBreakdown.suggestEnergyLevel(taskData.title),
             isSurvival: taskData.isSurvival || aiBreakdown.suggestSurvival(taskData.title),
+            priority: taskData.priority || 'medium',
+            dueDate: taskData.dueDate || null,
             parent: taskData.parent || null,
             tags: taskData.tags || [],
             subtasks: taskData.subtasks || []
@@ -119,7 +121,7 @@ class TaskManager {
             throw new Error('Task not found');
         }
 
-        const subtasks = aiBreakdown.breakdown(task.title);
+        const subtasks = await aiBreakdown.breakdown(task.title);
         const subtaskIds = [];
 
         for (const subtaskData of subtasks) {
