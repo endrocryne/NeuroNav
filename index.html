@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NeuroNav - Your neurodivergent-friendly task management companion">
+    <meta name="theme-color" content="#6750A4">
+    <title>NeuroNav - Task Manager</title>
+    
+    <!-- Material Design Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- PWA manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Apple Touch Icon -->
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/styles/main.css">
+    <link rel="stylesheet" href="/styles/material3.css">
+    <link rel="stylesheet" href="/styles/modes.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading-screen">
+            <div class="loading-spinner"></div>
+            <p>Loading NeuroNav...</p>
+        </div>
+
+        <!-- Main App Container -->
+        <div id="main-app" class="main-app hidden">
+            <!-- Header -->
+            <header class="app-header">
+                <button class="icon-button" id="menu-button" aria-label="Menu">
+                    <span class="material-icons">menu</span>
+                </button>
+                <h1 class="app-title">NeuroNav</h1>
+                <button class="icon-button" id="settings-button" aria-label="Settings">
+                    <span class="material-icons">settings</span>
+                </button>
+            </header>
+
+            <!-- Energy Level Selector -->
+            <div id="energy-selector" class="energy-selector">
+                <p class="energy-label">How are you feeling today?</p>
+                <div class="energy-buttons">
+                    <button class="energy-button" data-level="high">
+                        <span class="material-icons">bolt</span>
+                        <span>High Energy</span>
+                    </button>
+                    <button class="energy-button" data-level="medium">
+                        <span class="material-icons">wb_sunny</span>
+                        <span>Medium Energy</span>
+                    </button>
+                    <button class="energy-button" data-level="low">
+                        <span class="material-icons">nightlight</span>
+                        <span>Low Energy</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mode Selector -->
+            <div id="mode-selector" class="mode-selector">
+                <button class="mode-tab active" data-mode="linear">
+                    <span class="material-icons">list</span>
+                    <span>Linear</span>
+                </button>
+                <button class="mode-tab" data-mode="mindmap">
+                    <span class="material-icons">account_tree</span>
+                    <span>Mind Map</span>
+                </button>
+                <button class="mode-tab" data-mode="low-stimulus">
+                    <span class="material-icons">minimize</span>
+                    <span>Focus</span>
+                </button>
+                <button class="mode-tab" data-mode="gamified">
+                    <span class="material-icons">emoji_events</span>
+                    <span>Gamified</span>
+                </button>
+            </div>
+
+            <!-- Encouragement Message -->
+            <div id="encouragement" class="encouragement">
+                <span class="material-icons">favorite</span>
+                <p id="encouragement-text">You've got this! Let's take it one step at a time.</p>
+            </div>
+
+            <!-- Main Content Area -->
+            <main id="main-content" class="main-content">
+                <!-- Task Input -->
+                <div class="task-input-container">
+                    <input 
+                        type="text" 
+                        id="task-input" 
+                        class="task-input" 
+                        placeholder="What would you like to accomplish?"
+                        aria-label="Task input"
+                    >
+                    <button class="icon-button primary" id="add-task-button" aria-label="Add task">
+                        <span class="material-icons">add</span>
+                    </button>
+                    <button class="icon-button" id="ai-breakdown-button" aria-label="Break down task with AI">
+                        <span class="material-icons">auto_awesome</span>
+                    </button>
+                </div>
+
+                <!-- Task List View (Linear Mode) -->
+                <div id="linear-view" class="view-container active">
+                    <div id="task-list" class="task-list"></div>
+                </div>
+
+                <!-- Mind Map View -->
+                <div id="mindmap-view" class="view-container">
+                    <div id="mindmap-canvas" class="mindmap-canvas"></div>
+                </div>
+
+                <!-- Low Stimulus View -->
+                <div id="low-stimulus-view" class="view-container">
+                    <div id="focus-task" class="focus-task"></div>
+                    <div class="focus-controls">
+                        <button class="button" id="prev-task-button">Previous</button>
+                        <button class="button" id="next-task-button">Next</button>
+                    </div>
+                </div>
+
+                <!-- Gamified View -->
+                <div id="gamified-view" class="view-container">
+                    <div class="gamified-stats">
+                        <div class="stat-card">
+                            <span class="material-icons">star</span>
+                            <div>
+                                <p class="stat-value" id="points-value">0</p>
+                                <p class="stat-label">Points</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <span class="material-icons">local_fire_department</span>
+                            <div>
+                                <p class="stat-value" id="streak-value">0</p>
+                                <p class="stat-label">Day Streak</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill"></div>
+                    </div>
+                    <div id="gamified-task-list" class="task-list"></div>
+                </div>
+            </main>
+
+            <!-- Floating Action Button -->
+            <button class="fab" id="fab" aria-label="Quick actions">
+                <span class="material-icons">add</span>
+            </button>
+        </div>
+
+        <!-- Side Navigation -->
+        <nav id="side-nav" class="side-nav">
+            <div class="nav-header">
+                <h2>NeuroNav</h2>
+                <button class="icon-button" id="close-nav" aria-label="Close menu">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            <ul class="nav-list">
+                <li>
+                    <button class="nav-item" id="nav-tasks">
+                        <span class="material-icons">check_circle</span>
+                        <span>Tasks</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" id="nav-routines">
+                        <span class="material-icons">repeat</span>
+                        <span>Routines</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" id="nav-export">
+                        <span class="material-icons">download</span>
+                        <span>Export Data</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" id="nav-import">
+                        <span class="material-icons">upload</span>
+                        <span>Import Data</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Modal for Routines -->
+        <div id="routine-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Create Routine</h2>
+                    <button class="icon-button" id="close-routine-modal">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input 
+                        type="text" 
+                        id="routine-name" 
+                        class="input" 
+                        placeholder="Routine name (e.g., Morning Routine)"
+                    >
+                    <textarea 
+                        id="routine-input" 
+                        class="textarea" 
+                        placeholder="Describe your routine in natural language. For example: 'Morning: wake up, make coffee, check email, take vitamins'"
+                        rows="6"
+                    ></textarea>
+                    <div class="modal-actions">
+                        <button class="button" id="cancel-routine">Cancel</button>
+                        <button class="button primary" id="save-routine">Save Routine</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Task Modal -->
+        <div id="edit-task-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Edit Task</h2>
+                    <button class="icon-button" id="close-edit-task-modal">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="edit-task-title">Task Title</label>
+                    <input 
+                        type="text" 
+                        id="edit-task-title" 
+                        class="input" 
+                        placeholder="Task title"
+                        required
+                    >
+                    
+                    <label for="edit-task-description">Description (optional)</label>
+                    <textarea 
+                        id="edit-task-description" 
+                        class="textarea" 
+                        placeholder="Add more details about this task"
+                        rows="3"
+                    ></textarea>
+                    
+                    <label for="edit-task-priority">Priority</label>
+                    <select id="edit-task-priority" class="input">
+                        <option value="low">Low</option>
+                        <option value="medium">Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                    
+                    <label for="edit-task-energy">Energy Level</label>
+                    <select id="edit-task-energy" class="input">
+                        <option value="low">Low Energy 🌙</option>
+                        <option value="medium">Medium Energy ☀️</option>
+                        <option value="high">High Energy ⚡</option>
+                    </select>
+                    
+                    <label for="edit-task-due-date">Due Date (optional)</label>
+                    <input 
+                        type="date" 
+                        id="edit-task-due-date" 
+                        class="input"
+                    >
+                    
+                    <div class="setting-item">
+                        <label for="edit-task-survival">
+                            <span>Mark as Essential/Survival Task</span>
+                        </label>
+                        <input type="checkbox" id="edit-task-survival">
+                    </div>
+                    
+                    <div class="modal-actions">
+                        <button class="button" id="cancel-edit-task">Cancel</button>
+                        <button class="button primary" id="save-edit-task">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Settings</h2>
+                    <button class="icon-button" id="close-settings-modal">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-item">
+                        <label for="encouragement-toggle">
+                            <span>Show encouraging messages</span>
+                        </label>
+                        <input type="checkbox" id="encouragement-toggle" checked>
+                    </div>
+                    <div class="setting-item">
+                        <label for="auto-breakdown-toggle">
+                            <span>Auto-suggest task breakdown</span>
+                        </label>
+                        <input type="checkbox" id="auto-breakdown-toggle" checked>
+                    </div>
+                    
+                    <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">LLM Configuration (Optional)</h3>
+                    <p style="font-size: 14px; color: var(--on-surface-variant); margin-bottom: 1rem;">
+                        Configure an LLM endpoint for AI-powered task breakdown. Leave empty to use pattern matching.
+                    </p>
+                    
+                    <label for="llm-endpoint">LLM API Endpoint</label>
+                    <input 
+                        type="text" 
+                        id="llm-endpoint" 
+                        class="input" 
+                        placeholder="https://api.openai.com/v1/chat/completions"
+                    >
+                    
+                    <label for="llm-api-key">API Key (optional)</label>
+                    <input 
+                        type="password" 
+                        id="llm-api-key" 
+                        class="input" 
+                        placeholder="Your API key"
+                    >
+                    
+                    <div class="modal-actions">
+                        <button class="button primary" id="close-settings">Done</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div id="toast-container" class="toast-container"></div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/storage.js"></script>
+    <script src="/js/ai-breakdown.js"></script>
+    <script src="/js/routines.js"></script>
+    <script src="/js/tasks.js"></script>
+    <script src="/js/modes.js"></script>
+    <script src="/js/encouragement.js"></script>
+    <script src="/js/app.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('Service Worker registered'))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
