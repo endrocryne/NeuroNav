@@ -28,7 +28,6 @@ const App: React.FC = () => {
     }
   }, [uiMode]);
   
-  // Effect for scheduling task reminders via Service Worker
   useEffect(() => {
     const sw = navigator.serviceWorker;
     if (notificationPermission === 'granted' && sw.controller) {
@@ -39,7 +38,6 @@ const App: React.FC = () => {
                     task: { id: task.id, title: task.title, dueDate: task.dueDate, completed: task.completed }
                 });
             } else {
-                // If task is completed or has no due date, ensure any existing reminder is cancelled
                 sw.controller.postMessage({ type: 'CANCEL_REMINDER', taskId: task.id });
             }
         });
@@ -80,13 +78,11 @@ const App: React.FC = () => {
 
       const newCompletedState = !taskToToggle.completed;
       
-      // Fix: Explicitly type `taskMap` to resolve errors where the `completed` property was not found on type `unknown`.
       const taskMap: Map<string, Task> = new Map(prevTasks.map(t => [t.id, { ...t }]));
 
-      // Toggle the selected task
       taskMap.get(id)!.completed = newCompletedState;
 
-      // If it's a parent task, cascade the change to children
+
       if (!taskToToggle.parentId) {
         prevTasks.forEach(task => {
           if (task.parentId === id) {
@@ -95,11 +91,9 @@ const App: React.FC = () => {
         });
       }
 
-      // If a task with a parent is changed, check if parent's state should change
       const parentId = taskToToggle.parentId;
       if (parentId) {
         const siblings = prevTasks.filter(t => t.parentId === parentId);
-        // We need to use the updated state from the map for the check
         const updatedSiblings = siblings.map(s => taskMap.get(s.id)!);
         const allSubtasksCompleted = updatedSiblings.every(s => s.completed);
         
@@ -116,7 +110,6 @@ const App: React.FC = () => {
   const deleteTask = (id: string) => {
     setTasks(tasks.filter(task => {
         if (task.id === id) {
-            // Cancel reminder when deleting
             if (navigator.serviceWorker.controller) {
                 navigator.serviceWorker.controller.postMessage({ type: 'CANCEL_REMINDER', taskId: id });
             }
