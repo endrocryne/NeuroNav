@@ -4,7 +4,7 @@ import { UIMode, EnergyLevel, Priority } from '../types';
 export const functionDeclarations: FunctionDeclaration[] = [
     {
         name: 'getTasks',
-        description: 'Get a list of all tasks. Good for answering questions like "what are my tasks for today?" or "do I have any high priority tasks?".',
+        description: 'Get all tasks',
         parameters: {
             type: Type.OBJECT,
             properties: {},
@@ -16,24 +16,24 @@ export const functionDeclarations: FunctionDeclaration[] = [
         parameters: {
             type: Type.OBJECT,
             properties: {
-                title: { type: Type.STRING, description: 'The title of the task.' },
-                parentId: { type: Type.STRING, description: 'The ID of the parent task, if this is a subtask.' },
+                title: { type: Type.STRING, description: 'Task title' },
+                parentId: { type: Type.STRING, description: 'Parent task ID for subtasks' },
             },
             required: ['title']
         }
     },
     {
         name: 'updateTask',
-        description: 'Update properties of an existing task, like its due date, priority, or energy level.',
+        description: 'Update task properties',
         parameters: {
             type: Type.OBJECT,
             properties: {
-                taskId: { type: Type.STRING, description: 'The ID of the task to update.' },
+                taskId: { type: Type.STRING, description: 'Task ID' },
                 updates: {
                     type: Type.OBJECT,
                     properties: {
                         title: { type: Type.STRING },
-                        dueDate: { type: Type.STRING, description: 'The due date in YYYY-MM-DD format.' },
+                        dueDate: { type: Type.STRING, description: 'Due date (YYYY-MM-DD)' },
                         priority: { type: Type.STRING, enum: Object.values(Priority) },
                         energyRequired: { type: Type.STRING, enum: Object.values(EnergyLevel) },
                     }
@@ -44,12 +44,12 @@ export const functionDeclarations: FunctionDeclaration[] = [
     },
     {
         name: 'setTaskCompleted',
-        description: 'Mark a task or subtask as complete or incomplete.',
+        description: 'Mark task as complete or incomplete',
         parameters: {
             type: Type.OBJECT,
             properties: {
-                taskId: { type: Type.STRING, description: 'The ID of the task to mark.' },
-                completed: { type: Type.BOOLEAN, description: 'Set to true for complete, false for incomplete.' },
+                taskId: { type: Type.STRING, description: 'Task ID' },
+                completed: { type: Type.BOOLEAN, description: 'Completion status' },
             },
             required: ['taskId', 'completed']
         }
@@ -60,14 +60,14 @@ export const functionDeclarations: FunctionDeclaration[] = [
         parameters: {
             type: Type.OBJECT,
             properties: {
-                taskId: { type: Type.STRING, description: 'The ID of the task to delete.' }
+                taskId: { type: Type.STRING, description: 'Task ID' }
             },
             required: ['taskId']
         }
     },
     {
         name: 'setUiMode',
-        description: "Change the app's user interface mode.",
+        description: 'Change UI mode',
         parameters: {
             type: Type.OBJECT,
             properties: {
@@ -78,7 +78,7 @@ export const functionDeclarations: FunctionDeclaration[] = [
     },
     {
         name: 'setEnergyLevel',
-        description: "Update the user's current energy level.",
+        description: 'Update energy level',
         parameters: {
             type: Type.OBJECT,
             properties: {
@@ -89,27 +89,27 @@ export const functionDeclarations: FunctionDeclaration[] = [
     },
     {
         name: 'applyRoutine',
-        description: 'Applies a routine, adding its tasks to the current task list and navigating to the task view.',
+        description: 'Apply routine',
         parameters: {
             type: Type.OBJECT,
             properties: {
-                routineId: { type: Type.STRING, description: 'The ID of the routine to apply.' }
+                routineId: { type: Type.STRING, description: 'Routine ID' }
             },
             required: ['routineId']
         }
     },
     {
         name: 'updateRoutine',
-        description: 'Updates a routine with a new name or new tasks.',
+        description: 'Update routine',
         parameters: {
             type: Type.OBJECT,
             properties: {
-                routineId: { type: Type.STRING, description: 'The ID of the routine to update.' },
+                routineId: { type: Type.STRING, description: 'Routine ID' },
                 updates: {
                     type: Type.OBJECT,
                     properties: {
-                        name: { type: Type.STRING, description: 'The new name for the routine.' },
-                        tasks: { type: Type.ARRAY, items: { type: Type.STRING }, description: 'The new list of task titles for the routine.'}
+                        name: { type: Type.STRING, description: 'Routine name' },
+                        tasks: { type: Type.ARRAY, items: { type: Type.STRING }, description: 'Task titles'}
                     }
                 }
             },

@@ -15,7 +15,7 @@ const breakdownSchema = {
   properties: {
     subTasks: {
       type: Type.ARRAY,
-      description: 'A list of simple, actionable sub-task strings.',
+      description: 'List of subtask strings',
       items: { type: Type.STRING },
     },
   },
@@ -27,7 +27,7 @@ export const breakdownTask = async (task: string): Promise<string[]> => {
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: `You are an expert project manager specializing in helping neurodivergent individuals. Break down the following complex task into a series of small, clear, and actionable sub-tasks. The language should be supportive and simple. Task: "${task}"`,
+      contents: `Break down this task into small, clear subtasks: "${task}"`,
       config: {
         responseMimeType: "application/json",
         responseSchema: breakdownSchema,
@@ -49,11 +49,11 @@ const routineSchema = {
     properties: {
         name: {
             type: Type.STRING,
-            description: "A descriptive name for the routine (e.g., 'Morning Routine')."
+            description: "Routine name"
         },
         tasks: {
             type: Type.ARRAY,
-            description: "A list of tasks for the routine.",
+            description: "Task list",
             items: {
                 type: Type.STRING,
             }
@@ -68,7 +68,7 @@ export const createRoutineFromText = async (text: string): Promise<Omit<Routine,
     try {
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
-            contents: `You are a helpful assistant. Parse the following text to create a named routine with a list of tasks. The first part before a colon is usually the name. Text: "${text}"`,
+            contents: `Parse this text to create a routine with tasks. Format: "Name: task1, task2, task3". Text: "${text}"`,
             config: {
                 responseMimeType: "application/json",
                 responseSchema: routineSchema
@@ -88,7 +88,7 @@ const recommendationSchema = {
     properties: {
         recommendedTaskIds: {
             type: Type.ARRAY,
-            description: 'An array of task IDs in the recommended order of execution, containing up to 5 tasks.',
+            description: 'Task IDs in recommended order (max 5)',
             items: { type: Type.STRING }
         },
     },
@@ -102,19 +102,7 @@ export const getRecommendedTasks = async (tasks: Task[], energyLevel: EnergyLeve
         id, title, priority, dueDate, energyRequired
     }));
 
-    const prompt = `You are a productivity assistant for neurodivergent users. Your task is to recommend a small, manageable set of tasks (around 3, but no more than 5) for the user to focus on right now. The goal is to avoid overwhelm and encourage starting.
-User's current energy level is: ${energyLevel}.
-
-Here is the list of uncompleted tasks in JSON format:
-${JSON.stringify(simplifiedTasks)}
-
-Please recommend tasks based on these rules:
-1. Strongly prioritize tasks that are due soon (within the next 2 days) or are already overdue. Today is ${new Date().toISOString().split('T')[0]}.
-2. For the first one or two recommendations, pick tasks whose energy requirement is less than or equal to the user's current energy level to build momentum.
-3. If possible, include a mix of priorities, but always favor urgency (due date) over priority level.
-4. Do not recommend more than 5 tasks in total.
-
-Return a JSON object containing a single key "recommendedTaskIds", which is an array of the task IDs you are recommending. The order of IDs in the array should be the order you recommend tackling them.`;
+    const prompt = `Recommend 3-5 tasks to focus on now. Energy level: ${energyLevel}. Tasks: ${JSON.stringify(simplifiedTasks)}. Prioritize overdue/due-soon tasks, match energy level, limit to 5 total. Return JSON: {"recommendedTaskIds": ["id1", "id2", ...]}. Today: ${new Date().toISOString().split('T')[0]}`;
 
     try {
         const response = await ai.models.generateContent({
