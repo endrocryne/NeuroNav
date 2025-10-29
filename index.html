@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-g" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NeuroNav: AI Task Navigator</title>
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#FFFFFF" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,300;8..144,400;8..144,500;8..144,700&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Roboto Flex', 'sans-serif'],
+            },
+            colors: {
+              primary: {
+                DEFAULT: 'hsl(262 84% 58%)',
+                light: 'hsl(262 100% 96%)',
+                dark: 'hsl(262 72% 48%)',
+              },
+              secondary: {
+                DEFAULT: 'hsl(260 63% 96%)',
+              },
+              surface: {
+                DEFAULT: 'hsl(262 100% 99%)',
+                variant: 'hsl(260 33% 93%)',
+              },
+              background: 'hsl(0 0% 100%)',
+              'on-primary': 'hsl(0 0% 100%)',
+              'on-secondary': 'hsl(261 41% 30%)',
+              'on-surface': 'hsl(260 17% 11%)',
+              'on-surface-variant': 'hsl(260 10% 27%)',
+            }
+          }
+        }
+      }
+    </script>
+    <script type="module">
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js').then(registration => {
+                    console.log('SW registered: ', registration);
+                }).catch(registrationError => {
+                    console.log('SW registration failed: ', registrationError);
+                });
+            });
+        }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.22.0",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.544.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+{
+  "name": "NeuroNav: AI Task Navigator",
+  "description": "An adaptive task management PWA designed for neurodivergent users, featuring AI-powered task breakdown, personalized routines, and multiple UI modes to suit different energy and focus levels.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
