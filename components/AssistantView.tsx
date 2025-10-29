@@ -286,7 +286,6 @@ const AssistantView: React.FC<AssistantViewProps> = (props) => {
       return;
     }
     
-    // Fix: Address TypeScript error for vendor-prefixed 'webkitAudioContext'.
     const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
     inputAudioContextRef.current = new AudioContext({ sampleRate: 16000 });
     outputAudioContextRef.current = new AudioContext({ sampleRate: 24000 });

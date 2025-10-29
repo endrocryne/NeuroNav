@@ -63,7 +63,7 @@ const TaskView: React.FC<TaskViewProps> = ({
         setRecommendedTaskIds(recommendedIds);
     } else {
         console.error("AI filtering failed or returned no tasks.");
-        setRecommendedTaskIds([]); // Set to empty array to show a helpful message
+        setRecommendedTaskIds([]);
     }
     setIsLoading(false);
   };

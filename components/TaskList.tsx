@@ -251,7 +251,7 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, toggleTask, delete
                         isSubtask={true}
                         hasSubtasks={false}
                         isCollapsed={false}
-                        onToggleCollapse={() => {}} // No-op for subtasks
+                        onToggleCollapse={() => {}}
                       />
                   </div>
               ))}
