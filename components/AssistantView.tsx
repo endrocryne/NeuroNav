@@ -6,8 +6,6 @@ import { functionDeclarations } from '../services/tools';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import { breakdownTask } from '../services/geminiService';
 
-// --- Audio Helper Functions ---
-// Base64 encoding for audio data
 function encode(bytes: Uint8Array) {
   let binary = '';
   const len = bytes.byteLength;
@@ -17,7 +15,6 @@ function encode(bytes: Uint8Array) {
   return btoa(binary);
 }
 
-// Base64 decoding for audio data
 function decode(base64: string) {
   const binaryString = atob(base64);
   const len = binaryString.length;
@@ -28,7 +25,6 @@ function decode(base64: string) {
   return bytes;
 }
 
-// Decodes raw PCM audio data into an AudioBuffer for playback
 async function decodeAudioData(
   data: Uint8Array,
   ctx: AudioContext,
@@ -48,7 +44,6 @@ async function decodeAudioData(
   return buffer;
 }
 
-// Creates a Blob object for the Gemini API from raw audio data
 function createBlob(data: Float32Array): Blob {
   const l = data.length;
   const int16 = new Int16Array(l);
@@ -61,14 +56,11 @@ function createBlob(data: Float32Array): Blob {
   };
 }
 
-
-// Define message type for chat history
 interface ChatMessage {
   role: 'user' | 'model';
   content: string;
 }
 
-// Props passed from App.tsx
 interface AssistantViewProps {
   tasks: Task[];
   routines: Routine[];
@@ -109,7 +101,6 @@ const AssistantView: React.FC<AssistantViewProps> = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
-  // Voice mode state
   const [isVoiceModeActive, setIsVoiceModeActive] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [currentInputTranscription, setCurrentInputTranscription] = useState('');
@@ -142,7 +133,6 @@ const AssistantView: React.FC<AssistantViewProps> = (props) => {
       setCurrentPage,
   } = props;
   
-  // Initialize the AI instance
   useEffect(() => {
     if (!API_KEY) {
       if (history.length === 0 || (history.length > 0 && !history[0]?.content.includes('API key is missing'))) {
@@ -154,7 +144,6 @@ const AssistantView: React.FC<AssistantViewProps> = (props) => {
   }, [history]);
   
 
-  // Initialize the text chat session
   useEffect(() => {
     if (!API_KEY || !aiRef.current || isVoiceModeActive) return;
 
@@ -178,14 +167,12 @@ const AssistantView: React.FC<AssistantViewProps> = (props) => {
     }
   }, [API_KEY, history, isVoiceModeActive]);
 
-  // Auto-scroll to bottom of chat
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [history, currentInputTranscription, currentOutputTranscription]);
 
-  // Cleanup voice mode on component unmount
   useEffect(() => {
     return () => {
       stopVoiceMode();
@@ -365,7 +352,7 @@ const AssistantView: React.FC<AssistantViewProps> = (props) => {
 
             const base64Audio = message.serverContent?.modelTurn?.parts[0]?.inlineData?.data;
             if (base64Audio && outputAudioContextRef.current) {
-                setIsListening(false); // Model is speaking
+                setIsListening(false);
                 nextStartTimeRef.current = Math.max(nextStartTimeRef.current, outputAudioContextRef.current.currentTime);
                 const audioBuffer = await decodeAudioData(decode(base64Audio), outputAudioContextRef.current, 24000, 1);
                 const source = outputAudioContextRef.current.createBufferSource();
@@ -374,7 +361,7 @@ const AssistantView: React.FC<AssistantViewProps> = (props) => {
                 source.addEventListener('ended', () => {
                     audioSourcesRef.current.delete(source);
                     if (audioSourcesRef.current.size === 0) {
-                        setIsListening(true); // Ready to listen again
+                        setIsListening(true);
                     }
                 });
                 source.start(nextStartTimeRef.current);
@@ -414,7 +401,6 @@ const AssistantView: React.FC<AssistantViewProps> = (props) => {
     if (!API_KEY || isLoading) return;
     if (isVoiceModeActive) stopVoiceMode();
     setHistory([]);
-    // The useEffect for text chat will handle re-initialization
     setHistory([{ role: 'model', content: "Hello! I'm your NeuroNav assistant. How can I help you manage your day?" }]);
   };
 

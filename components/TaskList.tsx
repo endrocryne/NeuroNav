@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Task, Priority, EnergyLevel } from '../types';
 import { Check, Trash2, Edit3, Save, X, Flag, Calendar, Battery, ChevronDown, ChevronRight } from 'lucide-react';
 
-// A helper hook to get the previous value of a prop or state.
 function usePrevious<T>(value: T): T | undefined {
   const ref = useRef<T>();
   useEffect(() => {
@@ -73,7 +72,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, toggleTask, deleteTask, updat
         return (
             <div className={`p-3 rounded-lg bg-surface shadow-lg border border-primary`}>
                 <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 flex-shrink-0"></div> {/* Placeholder for checkbox */}
+                    <div className="w-6 h-6 flex-shrink-0"></div>
                     <input 
                         type="text"
                         value={editState.title}
@@ -184,7 +183,6 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, setTasks, toggleTask, delete
   const prevTasks = usePrevious(tasks);
   
   useEffect(() => {
-    // Automatically collapse parent tasks that have just been completed.
     if (!prevTasks) return;
     const newlyCompletedParentIds = tasks
       .filter(task => {

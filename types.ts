@@ -18,7 +18,7 @@ export interface Task {
   parentId: string | null;
   createdAt: string;
   priority: Priority;
-  dueDate: string | null; // ISO string for date
+  dueDate: string | null;
   energyRequired: EnergyLevel;
 }
 
